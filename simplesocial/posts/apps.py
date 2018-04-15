@@ -1,3 +1,4 @@
+# POSTS 
 from django.apps import AppConfig
 
 
