@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.contrib import messages
 
 # Create your views here.
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -8,6 +9,7 @@ from django.views import generic
 from django.shortcuts import get_object_or_404
 
 from .models import Group, GroupMember
+from . import models
 
 class CreateGroup(LoginRequiredMixin,generic.CreateView):
     fields = ('name','description')
@@ -22,7 +24,7 @@ class ListGroups(generic.ListView):
 class JoinGroup(LoginRequiredMixin,generic.RedirectView):
 
     def get_redirect_url(self,*args,**kwargs):
-        return reverse('groups:single',kwargs={'slug:self.kwargs.get('slug')})
+        return reverse('groups:single',kwargs={'slug':self.kwargs.get('slug')})
 
     def get(self,request,*args,**kwargs):
         group = get_object_or_404(Group,slug=self.kwargs.get('slug'))

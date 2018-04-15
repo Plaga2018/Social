@@ -1,4 +1,4 @@
-# POSTS 
+# POSTS
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.conf import settings
@@ -12,7 +12,7 @@ User = get_user_model()
 
 class Post(models.Model):
     user = models.ForeignKey(User,related_name='posts')
-    create_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now=True)
     message = models.TextField()
     message_html = models.TextField(editable=False)
     group = models.ForeignKey(Group,related_name='posts',null=True,blank=True)

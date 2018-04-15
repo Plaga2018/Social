@@ -1,7 +1,7 @@
 # POSTS VIEWS.PY
-from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.urlresolvers import reverse_lazy
+from django.contrib import messages
 
 from django.http import Http404
 from django.views import generic
@@ -12,31 +12,31 @@ from . import models
 from . import forms
 
 from django.contrib.auth import get_user_model
-User = get_user_model  #uses the current user logged in
+User = get_user_model()  #uses the current user logged in
 
 # list of posts belonging to a group.
 class PostList(SelectRelatedMixin,generic.ListView):
     model = models.Post
-    selected_related = ('user','group')
+    select_related = ('user','group')
 
 # generic view for the users posts
-class UserPosts(generic.ListView)
+class UserPosts(generic.ListView):
     model = models.Post
-    template_name = 'posts/user_post_list.html'
+    template_name = "posts/user_post_list.html"
 
-    # to make sure that when you call the queryset for the userpost that the user actually exists and to retrieve their posts.
     def get_queryset(self):
         try:
-            self.post.user = User.objects.prefetch_related('posts').get(username__iexact=self.kwargs.get('username'))
+            self.post_user = User.objects.prefetch_related("posts").get(username__iexact=self.kwargs.get("username"))
         except User.DoesNotExist:
             raise Http404
         else:
             return self.post_user.posts.all()
 
-    def get_context_data(self,**kwargs):
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['post_user'] = self.post_user
+        context["post_user"] = self.post_user
         return context
+
 
 
 class PostDetail(SelectRelatedMixin,generic.DetailView):
@@ -60,7 +60,7 @@ class CreatePost(LoginRequiredMixin,SelectRelatedMixin,generic.CreateView):
 
 class DeletePost(LoginRequiredMixin,SelectRelatedMixin,generic.DeleteView):
     model = models.Post
-    selected_related = ('user','group')
+    select_related = ('user','group')
     success_url = reverse_lazy('posts:all')
 
     def get_queryset(self):
